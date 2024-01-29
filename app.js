@@ -13,7 +13,7 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
-const dataBase = client.db("royal");
+const dataBase = client.db(process.env.DATABASE_PROD);
 const collection = dataBase.collection("products");
 
 const app = express();
@@ -37,7 +37,7 @@ app.get("/inventoryProducts", async (req, res) => {
 const getInventory = async () => {
   try {
     const result = await collection.find().toArray();
-    return result.slice(0, 500);
+    return result;
   } catch (error) {
     console.log(`ERROR : ${error}`);
   }
