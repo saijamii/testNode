@@ -24,14 +24,20 @@ app.get("/", (req, res) => {
 });
 
 app.get("/inventoryProducts", async (req, res) => {
-  const products = await getInventory();
-  res.status(200).json(products);
+  try {
+    const products = await getInventory();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
 });
 
 const getInventory = async () => {
   try {
     const result = await collection.find().toArray();
-    return result.slice(0, 100);
+    return result.slice(0, 500);
   } catch (error) {
     console.log(`ERROR : ${error}`);
   }
@@ -48,11 +54,15 @@ async function getUserById(id) {
 }
 
 app.post("/addInventory", (req, res) => {
-  console.log(req.body);
-  let dataJson = JSON.parse(JSON.stringify(req.body));
-  console.log(dataJson, "dataJson");
-  addProducts(dataJson);
-  res.status(200).json(dataJson);
+  try {
+    console.log(req.body);
+    let dataJson = JSON.parse(JSON.stringify(req.body));
+    console.log(dataJson, "dataJson");
+    addProducts(dataJson);
+    res.status(200).json(dataJson);
+  } catch (error) {
+    res.status(500).json({ error: `Internal Server Error: ${error.message}` });
+  }
 });
 
 const addProducts = async (dataJson) => {
@@ -60,7 +70,7 @@ const addProducts = async (dataJson) => {
     const result = await collection.insertOne(dataJson);
     console.log(`Saved response with ID: ${result.insertedId}`);
   } catch (error) {
-    console.error(`Error : ${error}`);
+    res.status(500).json({ error: `Internal Server Error: ${error.message}` });
   }
 };
 
