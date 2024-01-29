@@ -56,10 +56,16 @@ async function getUserById(id) {
 app.post("/addInventory", (req, res) => {
   try {
     console.log(req.body);
+    // Check if req.body is empty or undefined
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Invalid data. Please provide valid data." });
+    }
     let dataJson = JSON.parse(JSON.stringify(req.body));
     console.log(dataJson, "dataJson");
     addProducts(dataJson);
-    res.status(200).json(dataJson);
+    res.status(200).json({ message: "success", data: dataJson });
   } catch (error) {
     res.status(500).json({ error: `Internal Server Error: ${error.message}` });
   }
