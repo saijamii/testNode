@@ -1,8 +1,14 @@
 const fs = require("fs");
-fs.readFile("notes.txt", "utf8", (err, data) => {
-    if (err) {
-        console.error(err);
-        return;
-    }
+const util = require("util");
+const readFileAsync = util.promisify(fs.readFile);
+
+async function readNotes() {
+  try {
+    const data = await readFileAsync("notes.txt", "utf-8");
     console.log(data);
-});
+  } catch (error) {
+    console.error(`Internal Server Error: ${error.message}`);
+  }
+}
+
+readNotes();
