@@ -48,6 +48,34 @@ app.get("/getProductDetail/:id", async (req, res) => {
   res.status(200).json(user);
 });
 
+// app.get("/dummy", async (req, res) => {
+//   try {
+//     const response = await fetch(
+//       "https://jsonplaceholder.typicode.com/comments"
+//     );
+//     const data = await response.json();
+//     res.status(200).json(data);
+//   } catch (error) {
+//     res.status(500).json({
+//       error: `Internal Server Error: ${error.message}`,
+//     });
+//   }
+// });
+
+app.get("/dummyApi", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/comments"
+    );
+    const data = await response.json;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
+});
+
 async function getUserById(id) {
   const user = await collection.findOne({ _id: new ObjectId(id) });
   return user;
