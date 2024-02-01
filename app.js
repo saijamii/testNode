@@ -13,7 +13,7 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
-const dataBase = client.db(process.env.DATABASE_PROD);
+const dataBase = client.db("sample_analytics");
 const collection = dataBase.collection("products");
 
 const app = express();
@@ -33,7 +33,29 @@ app.get("/inventoryProducts", async (req, res) => {
     });
   }
 });
+app.get("/get/:tableName", async (req, res) => {
+  try {
+    const tableName = req.params.tableName;
+    const dataResponse = await getDataByTableName(tableName);
+    res.status(200).json(dataResponse);
+  } catch (error) {
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
+});
 
+const getDataByTableName = async (tableName) => {
+  console.log(tableName);
+  try {
+    const dataBase = client.db("sample_analytics");
+    const collection = dataBase.collection(tableName);
+    const result = await collection.find().toArray();
+    return result;
+  } catch (error) {
+    console.log(`ERROR : ${error}`);
+  }
+};
 const getInventory = async () => {
   try {
     const result = await collection.find().toArray();
