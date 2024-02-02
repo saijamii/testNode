@@ -116,6 +116,21 @@ app.post("/addInventory", (req, res) => {
   }
 });
 
+app.post("/testFilter", async (req, res) => {
+  try {
+    const { postId } = req.body;
+    if (!postId) {
+      return res.status(400).json({ error: "postId is required" });
+    }
+    const fetchedData = await getDummyData();
+    const filteredData = fetchedData.filter((e) => e.postId === postId);
+    res.status(200).json(filteredData);
+  } catch (error) {
+    console.error("Error in testFilter:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 const addProducts = async (dataJson) => {
   try {
     const result = await collection.insertOne(dataJson);
