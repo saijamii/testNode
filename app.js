@@ -116,7 +116,7 @@ app.post("/addInventory", (req, res) => {
   }
 });
 
-app.post("/testFilter", async (req, res) => {
+app.post("/filterDummy", async (req, res) => {
   try {
     const { postId } = req.body;
     if (!postId) {
@@ -126,7 +126,7 @@ app.post("/testFilter", async (req, res) => {
     const filteredData = fetchedData.filter((e) => e.postId === postId);
     res.status(200).json(filteredData);
   } catch (error) {
-    console.error("Error in testFilter:", error);
+    console.error("Error in filterDummy:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
