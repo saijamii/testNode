@@ -28,6 +28,34 @@ app.get("/", (req, res) => {
 
 //CRUD OP
 
+
+app.post("/addInventory", (req, res) => {
+  try {
+    console.log(req.body);
+    // Check if req.body is empty or undefined
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Invalid data. Please provide valid data." });
+    }
+    let dataJson = JSON.parse(JSON.stringify(req.body));
+    console.log(dataJson, "dataJson");
+    addProducts(dataJson);
+    res.status(200).json({ message: "success", data: dataJson });
+  } catch (error) {
+    res.status(500).json({ error: `Internal Server Error: ${error.message}` });
+  }
+});
+
+const addProducts = async (dataJson) => {
+  try {
+    const result = await collection.insertOne(dataJson);
+    console.log(`Saved response with ID: ${result.insertedId}`);
+  } catch (error) {
+    res.status(500).json({ error: `Internal Server Error: ${error.message}` });
+  }
+};
+
 app.get("/inventoryProducts", async (req, res) => {
   try {
     const products = await getInventory();
@@ -58,32 +86,6 @@ const getUserById = async (id) => {
   return user;
 };
 
-app.post("/addInventory", (req, res) => {
-  try {
-    console.log(req.body);
-    // Check if req.body is empty or undefined
-    if (!req.body || Object.keys(req.body).length === 0) {
-      return res
-        .status(400)
-        .json({ error: "Invalid data. Please provide valid data." });
-    }
-    let dataJson = JSON.parse(JSON.stringify(req.body));
-    console.log(dataJson, "dataJson");
-    addProducts(dataJson);
-    res.status(200).json({ message: "success", data: dataJson });
-  } catch (error) {
-    res.status(500).json({ error: `Internal Server Error: ${error.message}` });
-  }
-});
-
-const addProducts = async (dataJson) => {
-  try {
-    const result = await collection.insertOne(dataJson);
-    console.log(`Saved response with ID: ${result.insertedId}`);
-  } catch (error) {
-    res.status(500).json({ error: `Internal Server Error: ${error.message}` });
-  }
-};
 
 app.put("/updateProduct/:id", async (req, res) => {
   try {
