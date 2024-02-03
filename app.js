@@ -85,6 +85,56 @@ const addProducts = async (dataJson) => {
   }
 };
 
+app.put("/updateProduct/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    if (!req.body || Object.keys(req.body)?.length === 0) {
+      return res.status(400).json({
+        error: "Request body is Empty",
+      });
+    }
+
+    const data = JSON.parse(JSON.stringify(req.body));
+    console.log(data);
+
+    const result = await updateProductById(id, data);
+
+    if (!result) {
+      return res.status(404).json({
+        error: "Product not Found",
+      });
+    }
+    res.status(200).json({
+      message: "Product updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+});
+
+const updateProductById = async (id, data) => {
+  try {
+    if (!ObjectId.isValid(id)) {
+      return null;
+    }
+
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: data }
+    );
+    return result;
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).json({
+      error: "Internal Serever Error",
+    });
+  }
+};
+
 app.delete("/deleteProduct/:id", async (req, res) => {
   const id = req.params.id;
   const success = await deleteProductById(id);
@@ -138,7 +188,6 @@ app.post("/filterDummy", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // Get Dynamic URL's
 
