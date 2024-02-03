@@ -13,7 +13,7 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
-const dataBase = client.db("sample_analytics");
+const dataBase = client.db(process.env.DATABASE_DEV);
 const collection = dataBase.collection("products");
 
 const app = express();
