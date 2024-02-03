@@ -13,15 +13,20 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+
 const dataBase = client.db(process.env.DATABASE_DEV);
 const collection = dataBase.collection("products");
 
 const app = express();
 app.use(express.json());
 
+//Intial Route
+
 app.get("/", (req, res) => {
   res.send(`API is Running on port ${PORT}`);
 });
+
+//CRUD OP
 
 app.get("/inventoryProducts", async (req, res) => {
   try {
@@ -34,33 +39,10 @@ app.get("/inventoryProducts", async (req, res) => {
   }
 });
 
-app.get("/get/:tableName", async (req, res) => {
-  try {
-    const tableName = req.params.tableName;
-    const dataResponse = await getDataByTableName(tableName);
-    res.status(200).json(dataResponse);
-  } catch (error) {
-    res.status(500).json({
-      error: `Internal Server Error: ${error.message}`,
-    });
-  }
-});
-
-const getDataByTableName = async (tableName) => {
-  console.log(tableName);
-  try {
-    const dataBase = client.db("sample_analytics");
-    const collection = dataBase.collection(tableName);
-    const result = await collection.find().toArray();
-    return result;
-  } catch (error) {
-    console.log(`ERROR : ${error}`);
-  }
-};
 const getInventory = async () => {
   try {
     const result = await collection.find().toArray();
-    return result;
+    return result.splice(0, 200);
   } catch (error) {
     console.log(`ERROR : ${error}`);
   }
@@ -71,32 +53,10 @@ app.get("/getProductDetail/:id", async (req, res) => {
   res.status(200).json(user);
 });
 
-const getDummyData = async () => {
-  try {
-    const response = await fetch(
-      "https://jsonplaceholder.typicode.com/comments"
-    );
-    return await response.json();
-  } catch (error) {
-    console.log(`ERROR : ${error}`);
-  }
-};
-
-app.get("/dummyApi", async (req, res) => {
-  try {
-    const data = await getDummyData();
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({
-      error: `Internal Server Error: ${error.message}`,
-    });
-  }
-});
-
-async function getUserById(id) {
+const getUserById = async (id) => {
   const user = await collection.findOne({ _id: new ObjectId(id) });
   return user;
-}
+};
 
 app.post("/addInventory", (req, res) => {
   try {
@@ -113,21 +73,6 @@ app.post("/addInventory", (req, res) => {
     res.status(200).json({ message: "success", data: dataJson });
   } catch (error) {
     res.status(500).json({ error: `Internal Server Error: ${error.message}` });
-  }
-});
-
-app.post("/filterDummy", async (req, res) => {
-  try {
-    const { postId } = req.body;
-    if (!postId) {
-      return res.status(400).json({ error: "postId is required" });
-    }
-    const fetchedData = await getDummyData();
-    const filteredData = fetchedData.filter((e) => e.postId === postId);
-    res.status(200).json(filteredData);
-  } catch (error) {
-    console.error("Error in filterDummy:", error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -153,6 +98,72 @@ app.delete("/deleteProduct/:id", async (req, res) => {
 const deleteProductById = async (id) => {
   const result = await collection.deleteOne({ _id: new ObjectId(id) });
   return result.deletedCount > 0;
+};
+
+//Fetch by URL
+app.get("/dummyApi", async (req, res) => {
+  try {
+    const data = await getDummyData();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
+});
+
+const getDummyData = async () => {
+  try {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/comments"
+    );
+    return await response.json();
+  } catch (error) {
+    console.log(`ERROR : ${error}`);
+  }
+};
+
+//Filter Data
+app.post("/filterDummy", async (req, res) => {
+  try {
+    const { postId } = req.body;
+    if (!postId) {
+      return res.status(400).json({ error: "postId is required" });
+    }
+    const fetchedData = await getDummyData();
+    const filteredData = fetchedData.filter((e) => e.postId === postId);
+    res.status(200).json(filteredData);
+  } catch (error) {
+    console.error("Error in filterDummy:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+// Get Dynamic URL's
+
+app.get("/get/:tableName", async (req, res) => {
+  try {
+    const tableName = req.params.tableName;
+    const dataResponse = await getDataByTableName(tableName);
+    res.status(200).json(dataResponse);
+  } catch (error) {
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
+});
+
+const getDataByTableName = async (tableName) => {
+  console.log(tableName);
+  try {
+    const dataBase = client.db("sample_analytics");
+    const collection = dataBase.collection(tableName);
+    const result = await collection.find().toArray();
+    return result;
+  } catch (error) {
+    console.log(`ERROR : ${error}`);
+  }
 };
 
 const readCSVFile = (filePath) => {
