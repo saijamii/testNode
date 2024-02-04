@@ -85,7 +85,7 @@ const getUserById = async (id) => {
   return user;
 };
 
-app.get("/querieTest", async (req, res) => {
+app.get("/querieSingle", async (req, res) => {
   try {
     if (!req.query.q || Object.keys(req.query.q).length === 0) {
       return res
@@ -103,6 +103,30 @@ app.get("/querieTest", async (req, res) => {
     console.error("Error", error);
     res.status(500).json({
       error: `Internal Serever Error: ${error.message}`,
+    });
+  }
+});
+
+app.get("/querieMulti", async (req, res) => {
+  try {
+    if (!req.query.q || Object.keys(req.query.q).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Invalid data. Please provide query data." });
+    }
+
+    const queryFilters = [];
+    Object.keys(req.query.q).forEach((key) => {
+      console.log(req.query.q[key]);
+      queryFilters.push({ [key]: req.query.q[key] });
+    });
+
+    const queryResult = await collection.find({ $and: queryFilters }).toArray();
+    res.status(200).json(queryResult);
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
     });
   }
 });
