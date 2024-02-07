@@ -9,7 +9,7 @@ app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
 
-const PORT = 3000;
+const PORT = 8000;
 
 // Dummy database (for demo purposes, replace with a real database)
 const users = [
