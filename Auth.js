@@ -1,6 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+//https://www.browserling.com/tools/bcrypt
 const bodyParser = require("body-parser");
 
 const app = express();
