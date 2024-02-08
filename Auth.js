@@ -15,12 +15,11 @@ const PORT = 8000;
 const users = [
   {
     userId: "SJ",
-    passwordHash:
-      "$2a$12$2EPnsk/JEq2.fr9AavSGYewRBwcxDK/Wb39.kN5BrfNnlxtEz7ZkO",
+    password: "$2a$12$2EPnsk/JEq2.fr9AavSGYewRBwcxDK/Wb39.kN5BrfNnlxtEz7ZkO",
   },
   {
     userId: "SJ2",
-    passwordHash: "6c569aabbf7775ef8fc5705a9f1f9b2f",
+    password: "6c569aabbf7775ef8fc5705a9f1f9b2f",
   },
 ];
 const secretKey = "your-secret-key";
@@ -39,12 +38,11 @@ app.post("/login", (req, res) => {
     }
 
     const { userId, password } = req.body;
-    console.log("Received login request for user:", userId);
 
     const isUser = users.find((e) => e.userId === userId);
     console.log("Found user:", isUser);
 
-    if (isUser && bcrypt.compareSync(password, isUser.passwordHash)) {
+    if (isUser && bcrypt.compareSync(password, isUser.password)) {
       // Generate a JWT token
       const token = jwt.sign(
         {
