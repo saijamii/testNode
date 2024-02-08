@@ -18,6 +18,7 @@ const dataBase = client.db(process.env.DATABASE_DEV);
 const collection = dataBase.collection("products");
 
 const app = express();
+const version = "Version 08.02.24.02";
 app.use(express.json());
 
 //Intial Route
