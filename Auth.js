@@ -15,11 +15,15 @@ const PORT = 8000;
 const users = [
   {
     userId: "SJ",
-    password: "$2a$12$2EPnsk/JEq2.fr9AavSGYewRBwcxDK/Wb39.kN5BrfNnlxtEz7ZkO",
+    password: "$2a$10$rOJxeED1y3I.foB6h3IyBeZa95tfRCTrslC.u8JOnNXh.VoxlNa0G",
+  },
+  {
+    userId: "SJ1",
+    password: "$2a$10$m0z1rsQaAwNGulxKfY5fZuFHBCiCZZ4.XPAZwQJjYSJYPXlqTulb.",
   },
   {
     userId: "SJ2",
-    password: "6c569aabbf7775ef8fc5705a9f1f9b2f",
+    password: "$2a$10$Z7BOVbAA1yOzY0no1gNjYuZX9/J6DvBoJ9.NgND5pgfCAJb7Mgg7e",
   },
 ];
 const secretKey = "your-secret-key";
@@ -57,6 +61,36 @@ app.post("/login", (req, res) => {
     } else {
       console.log("Invalid username or password.");
       res.status(401).json({ message: "Invalid username or password." });
+    }
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
+});
+
+app.post("/register", (req, res) => {
+  try {
+    if (Object.keys(req.body).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Invalid data. Please provide valid data." });
+    }
+    const { userId, password } = req.body;
+
+    const isUserExist = users.find((e) => e.userId === userId);
+
+    if (isUserExist) {
+      res
+        .status(400)
+        .json({ message: "Username already exists. Choose another one." });
+    } else {
+      // Hash the password before storing (using bcrypt)
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      // Store the user (replace with database insert)
+      users.push({ userId, password: hashedPassword });
+      res.json({ message: "User Registration successful!" });
     }
   } catch (error) {
     console.error("Error", error);
