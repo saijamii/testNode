@@ -70,7 +70,7 @@ const getUsers = async () => {
   }
 };
 
-app.post("/login", async (req, res) => {
+app.post("/sigin", async (req, res) => {
   try {
     if (Object.keys(req.body).length === 0) {
       return res
@@ -107,7 +107,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/register", async (req, res) => {
+app.post("/sigup", async (req, res) => {
   try {
     if (Object.keys(req.body).length === 0) {
       return res
