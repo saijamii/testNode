@@ -3,6 +3,7 @@ const express = require("express");
 const fs = require("fs");
 const parse = require("csv-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const cors = require("cors"); // Import the cors module
 
 const uri = process.env.MONGO_URL;
 
@@ -20,6 +21,7 @@ const collection = dataBase.collection("products");
 const app = express();
 const version = "Version 08.02.24.02";
 app.use(express.json());
+app.use(cors()); // Use cors middleware
 
 //Intial Route
 
