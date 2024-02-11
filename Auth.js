@@ -1,8 +1,24 @@
+require("dotenv").config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 //https://www.browserling.com/tools/bcrypt
 const bodyParser = require("body-parser");
+
+const { MongoClient, ServerApiVersion } = require("mongodb");
+
+const uri = process.env.MONGO_URL;
+
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
+
+const dataBase = client.db(process.env.DATABASE_DEV);
+const collection = dataBase.collection("testUsers");
 
 const app = express();
 app.use(express.json());
@@ -13,20 +29,20 @@ app.use(express.json());
 const PORT = 8000;
 
 // Dummy database (for demo purposes, replace with a real database)
-const users = [
-  {
-    userId: "SJ",
-    password: "$2a$10$rOJxeED1y3I.foB6h3IyBeZa95tfRCTrslC.u8JOnNXh.VoxlNa0G",
-  },
-  {
-    userId: "SJ1",
-    password: "$2a$10$m0z1rsQaAwNGulxKfY5fZuFHBCiCZZ4.XPAZwQJjYSJYPXlqTulb.",
-  },
-  {
-    userId: "SJ2",
-    password: "$2a$10$Z7BOVbAA1yOzY0no1gNjYuZX9/J6DvBoJ9.NgND5pgfCAJb7Mgg7e",
-  },
-];
+// const users = [
+//   {
+//     userId: "SJ",
+//     password: "$2a$10$rOJxeED1y3I.foB6h3IyBeZa95tfRCTrslC.u8JOnNXh.VoxlNa0G",
+//   },
+//   {
+//     userId: "SJ1",
+//     password: "$2a$10$m0z1rsQaAwNGulxKfY5fZuFHBCiCZZ4.XPAZwQJjYSJYPXlqTulb.",
+//   },
+//   {
+//     userId: "SJ2",
+//     password: "$2a$10$Z7BOVbAA1yOzY0no1gNjYuZX9/J6DvBoJ9.NgND5pgfCAJb7Mgg7e",
+//   },
+// ];
 const secretKey = "your-secret-key";
 
 //Routes
@@ -34,7 +50,27 @@ app.get("/", (req, res) => {
   res.send("Welcome to the authentication app!");
 });
 
-app.post("/login", (req, res) => {
+app.get("/users", async (req, res) => {
+  try {
+    const users = await getUsers();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
+});
+
+const getUsers = async () => {
+  try {
+    const result = await collection.find().toArray();
+    return result;
+  } catch (error) {
+    console.log(`ERROR : ${error}`);
+  }
+};
+
+app.post("/sigin", async (req, res) => {
   try {
     if (Object.keys(req.body).length === 0) {
       return res
@@ -43,7 +79,7 @@ app.post("/login", (req, res) => {
     }
 
     const { userId, password } = req.body;
-
+    const users = await getUsers();
     const isUser = users.find((e) => e.userId === userId);
     console.log("Found user:", isUser);
 
@@ -71,7 +107,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-app.post("/register", (req, res) => {
+app.post("/sigup", async (req, res) => {
   try {
     if (Object.keys(req.body).length === 0) {
       return res
@@ -80,6 +116,7 @@ app.post("/register", (req, res) => {
     }
     const { userId, password } = req.body;
 
+    const users = await getUsers();
     const isUserExist = users.find((e) => e.userId === userId);
 
     if (isUserExist) {
@@ -90,7 +127,12 @@ app.post("/register", (req, res) => {
       // Hash the password before storing (using bcrypt)
       const hashedPassword = bcrypt.hashSync(password, 10);
       // Store the user (replace with database insert)
-      users.push({ userId, password: hashedPassword });
+      const result = await collection.insertOne({
+        userId,
+        password: hashedPassword,
+      });
+      console.log(`Saved response with ID: ${result.insertedId}`);
+      // users.push({ userId, password: hashedPassword });
       res.json({ message: "User Registration successful!" });
     }
   } catch (error) {
