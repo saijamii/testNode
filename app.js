@@ -5,6 +5,10 @@ const parse = require("csv-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors"); // Import the cors module
 
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+//https://www.browserling.com/tools/bcrypt
+
 const uri = process.env.MONGO_URL;
 
 const client = new MongoClient(uri, {
@@ -26,7 +30,127 @@ app.use(cors()); // Use cors middleware
 //Intial Route
 
 app.get("/", (req, res) => {
-  res.send(`API is Running on port ${PORT}`);
+  res.send("Welcome to the authentication app!");
+});
+
+const secretKey = "your-secret-key";
+const usersCollection = dataBase.collection("testUsers");
+
+app.get("/users", async (req, res) => {
+  try {
+    const users = await getUsers();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
+});
+
+const getUsers = async () => {
+  try {
+    const result = await usersCollection.find().toArray();
+    return result;
+  } catch (error) {
+    console.log(`ERROR : ${error}`);
+  }
+};
+
+app.post("/sigin", async (req, res) => {
+  try {
+    if (Object.keys(req.body).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Invalid data. Please provide valid data." });
+    }
+
+    const { userId, password } = req.body;
+    const users = await getUsers();
+    const isUser = users.find((e) => e.userId === userId);
+    console.log("Found user:", isUser);
+
+    if (isUser && bcrypt.compareSync(password, isUser.password)) {
+      // Generate a JWT token
+      const token = jwt.sign(
+        {
+          userId: isUser.userId,
+        },
+        secretKey,
+        { expiresIn: "1h" }
+      );
+      res.json({
+        token,
+      });
+    } else {
+      console.log("Invalid username or password.");
+      res.status(401).json({ message: "Invalid username or password." });
+    }
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
+});
+
+app.post("/sigup", async (req, res) => {
+  try {
+    if (Object.keys(req.body).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Invalid data. Please provide valid data." });
+    }
+    const { userId, password } = req.body;
+
+    const users = await getUsers();
+    const isUserExist = users.find((e) => e.userId === userId);
+
+    if (isUserExist) {
+      res
+        .status(400)
+        .json({ message: "Username already exists. Choose another one." });
+    } else {
+      // Hash the password before storing (using bcrypt)
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      // Store the user (replace with database insert)
+      const result = await collection.insertOne({
+        userId,
+        password: hashedPassword,
+      });
+      console.log(`Saved response with ID: ${result.insertedId}`);
+      // users.push({ userId, password: hashedPassword });
+      res.json({ message: "User Registration successful!" });
+    }
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).json({
+      error: `Internal Server Error: ${error.message}`,
+    });
+  }
+});
+
+// Protected route
+
+// Middleware to verify JWT token
+const verifyToken = (req, res, next) => {
+  const token = req.headers["authorization"];
+
+  if (!token) {
+    return res.status(403).json({ message: "No token provided." });
+  }
+
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Failed to authenticate token." });
+    }
+
+    req.user = decoded;
+    next();
+  });
+};
+
+app.get("/dashboard", verifyToken, (req, res) => {
+  res.json({ message: "You have access to this protected route!" });
 });
 
 //CRUD OP
@@ -58,7 +182,7 @@ const addProducts = async (dataJson) => {
   }
 };
 
-app.get("/inventoryProducts", async (req, res) => {
+app.get("/inventoryProducts", verifyToken, async (req, res) => {
   try {
     const products = await getInventory();
     res.status(200).json(products);
