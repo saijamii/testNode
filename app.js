@@ -182,7 +182,7 @@ const addProducts = async (dataJson) => {
   }
 };
 
-app.get("/inventoryProducts", async (req, res) => {
+app.get("/inventoryProducts", verifyToken, async (req, res) => {
   try {
     const products = await getInventory();
     res.status(200).json(products);
