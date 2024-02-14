@@ -78,8 +78,9 @@ app.post("/sigin", async (req, res) => {
         secretKey,
         { expiresIn: "1h" }
       );
-      res.json({
-        token,
+      res.status(200).json({
+        message: "success",
+        token: token,
       });
     } else {
       console.log("Invalid username or password.");
@@ -119,7 +120,9 @@ app.post("/sigup", async (req, res) => {
       });
       console.log(`Saved response with ID: ${result.insertedId}`);
       // users.push({ userId, password: hashedPassword });
-      res.json({ message: "User Registration successful!" });
+      res.status(200).json({
+        message: "success",
+      });
     }
   } catch (error) {
     console.error("Error", error);
