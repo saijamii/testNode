@@ -155,7 +155,7 @@ app.get("/dashboard", verifyToken, (req, res) => {
 
 //CRUD OP
 
-app.post("/addInventory", (req, res) => {
+app.post("/addInventory", verifyToken, (req, res) => {
   try {
     console.log(req.body);
     // Check if req.body is empty or undefined
@@ -202,7 +202,7 @@ const getInventory = async () => {
   }
 };
 
-app.get("/getProductDetail/:id", async (req, res) => {
+app.get("/getProductDetail/:id", verifyToken, async (req, res) => {
   const user = await getUserById(req.params.id);
   res.status(200).json(user);
 });
@@ -258,7 +258,7 @@ app.get("/querieMulti", async (req, res) => {
   }
 });
 
-app.put("/updateProduct/:id", async (req, res) => {
+app.put("/updateProduct/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -308,7 +308,7 @@ const updateProductById = async (id, data) => {
   }
 };
 
-app.delete("/deleteProduct/:id", async (req, res) => {
+app.delete("/deleteProduct/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   const success = await deleteProductById(id);
   if (success) {
