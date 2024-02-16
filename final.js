@@ -114,7 +114,7 @@ app.post("/sigup", async (req, res) => {
       // Hash the password before storing (using bcrypt)
       const hashedPassword = bcrypt.hashSync(password, 10);
       // Store the user (replace with database insert)
-      const result = await collection.insertOne({
+      const result = await usersCollection.insertOne({
         userId,
         password: hashedPassword,
       });
