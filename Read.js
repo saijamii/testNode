@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
   res.send(`Read file ${PORT}`);
 });
 
-const bigdataFile = (filePath) => {
+const bigdataFile = () => {
   const bigdata = [];
   const daily = [];
   fs.createReadStream("./CSV/Daily22.csv")
@@ -35,7 +35,6 @@ const bigdataFile = (filePath) => {
     });
 };
 
-// const csvFilePath = "./CSV/d2.csv";
 bigdataFile();
 
 const PORT = process.env.PORT;
