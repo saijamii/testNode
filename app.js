@@ -1,9 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const fs = require("fs");
-// const parse = require("csv-parser");
-const { parse } = require("csv-parse");
-const csvParser = require("csv-parse");
+const parse = require("csv-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors"); // Import the cors module
 
@@ -268,32 +266,42 @@ const getDataByTableName = async (tableName) => {
   }
 };
 
-const bigdataFile = (filePath) => {
-  const bigdata = [];
-  const daily = [];
-  fs.createReadStream("./CSV/Daily22.csv")
+const readCSVFile = (filePath) => {
+  const data = [];
+  const finalData = [];
+  fs.createReadStream(filePath)
     .pipe(parse())
-    .on("data", (row) => {
-      row[0] !== "" && daily.push("7" + " | " + row[0]);
-      row[1] !== "" && bigdata.push("7" + " | " + row[1]);
-    })
-    .on("end",async () => {
-      console.log(daily.length, bigdata.length);
-      // let unique = [...new Set(finalData)];
-      let intersection = bigdata.filter((x) => !daily.includes(x));
-      // console.log(unique.length, finalData.length);
-      await fs.writeFileSync("duplicates.json","Start\n")
-      intersection.map(async (e) => {
-        await fs.appendFileSync("duplicates.json",e+"\n")
+    .on("row", (row) => {
+      data.push({
+        sku: row[0],
+        productName: row[1],
+        description: row[2],
+        brand: row[3],
+        category: row[4],
+        finish: row[5],
+        cost: row[6],
+        price: row[7],
+        qty: row[8],
+        discontinued: row[9],
       });
+    })
+    .on("data", async (query) => {
+      finalData.push(query);
+    })
+    .on("end", async () => {
+      console.log(finalData, "data");
+      // await collection.insertMany(finalData);
+      // console.log(
+      //   "CSV file successfully processed and data inserted into MongoDB"
+      // );
     })
     .on("error", (error) => {
       console.log(`Error reading CSV file: ${error}`);
     });
 };
 
-// const csvFilePath = "./CSV/d2.csv";
-bigdataFile();
+const csvFilePath = "../CSV/BL_Inventory_Products.csv";
+// readCSVFile(csvFilePath);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
