@@ -17,22 +17,17 @@ const bigdataFile = () => {
   fs.createReadStream("./CSV/Daily22.csv")
     .pipe(parse())
     .on("data", (row) => {
-      row[0] !== "" && daily.push("7" + " | " + row[0]);
-      row[1] !== "" && bigdata.push("7" + " | " + row[1]);
+      row[0] !== "" && daily.push("19" + " | " + row[0]);
+      row[1] !== "" && bigdata.push("19" + " | " + row[1]);
     })
     .on("end", async () => {
       console.log(daily.length, bigdata.length);
       let intersection = bigdata.filter((x) => !daily.includes(x));
-      let final = [];
-      intersection?.map((e) => {
-        final.push({
-          mft: e,
-        });
-      });
-      await fs.appendFileSync("duplicates.json", "Start\n");
-      final.map(async (e) => {
-        await fs.appendFileSync("duplicates.json", JSON.stringify(e) + "\n");
-      });
+      let final = intersection.map((e) => ({ mft: e }));
+
+      const jsonString = final.map((e) => JSON.stringify(e)).join(",\n");
+      console.log(intersection.length);
+      await fs.appendFileSync("duplicates.json", jsonString);
     })
     .on("error", (error) => {
       console.log(`Error reading CSV file: ${error}`);
