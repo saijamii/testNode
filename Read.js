@@ -17,13 +17,13 @@ const bigdataFile = () => {
   fs.createReadStream("./CSV/Daily22.csv")
     .pipe(parse())
     .on("data", (row) => {
-      row[0] !== "" && daily.push("19" + " | " + row[0]);
-      row[1] !== "" && bigdata.push("19" + " | " + row[1]);
+      row[0] !== "" && daily.push("33" + " | " + row[0]);
+      row[1] !== "" && bigdata.push("33" + " | " + row[1]);
     })
     .on("end", async () => {
       console.log(daily.length, bigdata.length);
       let intersection = bigdata.filter((x) => !daily.includes(x));
-      let final = intersection.map((e) => ({ mft: e }));
+      let final = intersection.map((e) => [e]);
 
       const jsonString = final.map((e) => JSON.stringify(e)).join(",\n");
       console.log(intersection.length);
