@@ -22,12 +22,16 @@ const bigdataFile = () => {
     })
     .on("end", async () => {
       console.log(daily.length, bigdata.length);
-      // let unique = [...new Set(finalData)];
       let intersection = bigdata.filter((x) => !daily.includes(x));
-      // console.log(unique.length, finalData.length);
-      await fs.writeFileSync("duplicates.json", "Start\n");
-      intersection.map(async (e) => {
-        await fs.appendFileSync("duplicates.json", e + "\n");
+      let final = [];
+      intersection?.map((e) => {
+        final.push({
+          mft: e,
+        });
+      });
+      await fs.appendFileSync("duplicates.json", "Start\n");
+      final.map(async (e) => {
+        await fs.appendFileSync("duplicates.json", JSON.stringify(e) + "\n");
       });
     })
     .on("error", (error) => {
