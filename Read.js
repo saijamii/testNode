@@ -17,8 +17,8 @@ const bigdataFile = () => {
   fs.createReadStream("./CSV/Daily22.csv")
     .pipe(parse())
     .on("data", (row) => {
-      row[0] !== "" && daily.push("102" + " | " + row[0]);
-      row[1] !== "" && bigdata.push("102" + " | " + row[1]);
+      row[0] !== "" && daily.push("531" + " | " + row[0]);
+      row[1] !== "" && bigdata.push("531" + " | " + row[1]);
     })
     .on("end", async () => {
       console.log(daily.length, bigdata.length);
