@@ -20,7 +20,7 @@ const collection = dataBase.collection("products");
 
 const app = express();
 
-const version = "v28.02.24.02";
+const appVersion = "v28.02.24.04";
 
 app.use(express.json());
 app.use(cors()); // Use cors middleware
