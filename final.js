@@ -50,11 +50,7 @@ app.get("/users", async (req, res) => {
 const getUsers = async () => {
   try {
     const result = await usersCollection.find().toArray();
-    const data = result.map((e) => {
-      const { password, ...rest } = e;
-      return rest;
-    });
-    return data;
+    return result;
   } catch (error) {
     console.log(`ERROR : ${error}`);
   }
