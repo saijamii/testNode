@@ -59,6 +59,14 @@ const getUsers = async () => {
     console.log(`ERROR : ${error}`);
   }
 };
+const getExistingUsers = async () => {
+  try {
+    const result = await usersCollection.find().toArray();
+    return result;
+  } catch (error) {
+    console.log(`ERROR : ${error}`);
+  }
+};
 
 app.post("/sigin", async (req, res) => {
   try {
@@ -69,7 +77,7 @@ app.post("/sigin", async (req, res) => {
     }
 
     const { userId, password } = req.body;
-    const users = await getUsers();
+    const users = await getExistingUsers();
     const isUser = users.find((e) => e.userId === userId);
     console.log("Found user:", isUser);
 
@@ -107,7 +115,7 @@ app.post("/sigup", async (req, res) => {
     }
     const { userId, password, firstName, lastName } = req.body;
 
-    const users = await getUsers();
+    const users = await getExistingUsers();
     const isUserExist = users.find((e) => e.userId === userId);
 
     if (isUserExist) {
