@@ -105,7 +105,7 @@ app.post("/sigup", async (req, res) => {
         .status(400)
         .json({ error: "Invalid data. Please provide valid data." });
     }
-    const { userId, password } = req.body;
+    const { userId, password, firstName, lastName } = req.body;
 
     const users = await getUsers();
     const isUserExist = users.find((e) => e.userId === userId);
@@ -120,6 +120,8 @@ app.post("/sigup", async (req, res) => {
       // Store the user (replace with database insert)
       const result = await usersCollection.insertOne({
         userId,
+        firstName: firstName,
+        lastName: lastName,
         password: hashedPassword,
       });
       console.log(`Saved response with ID: ${result.insertedId}`);
