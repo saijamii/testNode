@@ -23,7 +23,7 @@ const dataBase = client.db(process.env.DATABASE_DEV);
 const collection = dataBase.collection("products");
 
 const app = express();
-const version = "Version 11.02.24.02";
+const appVersion = "v28.02.24.04";
 app.use(express.json());
 app.use(cors()); // Use cors middleware
 
@@ -50,6 +50,18 @@ app.get("/users", async (req, res) => {
 const getUsers = async () => {
   try {
     const result = await usersCollection.find().toArray();
+    const data = result.map((e) => {
+      const { password, ...rest } = e;
+      return rest;
+    });
+    return data;
+  } catch (error) {
+    console.log(`ERROR : ${error}`);
+  }
+};
+const getExistingUsers = async () => {
+  try {
+    const result = await usersCollection.find().toArray();
     return result;
   } catch (error) {
     console.log(`ERROR : ${error}`);
@@ -65,7 +77,7 @@ app.post("/sigin", async (req, res) => {
     }
 
     const { userId, password } = req.body;
-    const users = await getUsers();
+    const users = await getExistingUsers();
     const isUser = users.find((e) => e.userId === userId);
     console.log("Found user:", isUser);
 
@@ -101,9 +113,9 @@ app.post("/sigup", async (req, res) => {
         .status(400)
         .json({ error: "Invalid data. Please provide valid data." });
     }
-    const { userId, password } = req.body;
+    const { userId, password, firstName, lastName } = req.body;
 
-    const users = await getUsers();
+    const users = await getExistingUsers();
     const isUserExist = users.find((e) => e.userId === userId);
 
     if (isUserExist) {
@@ -116,6 +128,8 @@ app.post("/sigup", async (req, res) => {
       // Store the user (replace with database insert)
       const result = await usersCollection.insertOne({
         userId,
+        firstName: firstName,
+        lastName: lastName,
         password: hashedPassword,
       });
       console.log(`Saved response with ID: ${result.insertedId}`);
