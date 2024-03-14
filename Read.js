@@ -26,7 +26,7 @@ const bigdataFile = () => {
       let final = intersection.map((e) => [e]);
       const jsonString = final.map((e) => JSON.stringify(e)).join(",\n");
       console.log(intersection.length);
-      await fs.appendFileSync("duplicates.json", jsonString);
+      await fs.writeFileSync("duplicates.json", jsonString);
     })
     .on("error", (error) => {
       console.log(`Error reading CSV file: ${error}`);
