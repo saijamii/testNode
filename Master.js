@@ -24,6 +24,7 @@ const comapreMasterWithDaily = () => {
       
       if (row[3] !== "") {
         vendors.push({
+          "Active": row[1],
           "mftName": row[3],
           "Manufacturer Name": row[6],
           "Product Name": row[14],
@@ -34,7 +35,7 @@ const comapreMasterWithDaily = () => {
     })
 
     .on("end", async () => {
-        const intersection = vendors.filter((item) => !daily.has(item.mftName));
+      const intersection = vendors.filter((item) => !daily.has(item.mftName));
       console.log("Duplicates count:", intersection.length);
       let final = intersection.map((e) => e);
       let jsonString = final.map((e) => JSON.stringify(e)).join("\n");
