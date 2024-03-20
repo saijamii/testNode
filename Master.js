@@ -12,7 +12,6 @@ app.get("/", (req, res) => {
 
 const comapreMasterWithDaily = () => {
   let daily = new Set();
-  let bigdata = [];
   let vendors = [];
 
   fs.createReadStream("./CSV/ApplicationVishuBigFile.csv")
