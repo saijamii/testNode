@@ -231,15 +231,17 @@ const getUserById = async (id) => {
 
 app.get("/querieSingle", async (req, res) => {
   try {
-    if (!req.query.q || Object.keys(req.query.q).length === 0) {
+    if (!req.query.movie || Object.keys(req.query.movie).length === 0) {
       return res
         .status(400)
         .json({ error: "Invalid data. Please provide query data." });
     }
-    const querieItem = req.query.q;
+    const querieItem = req.query.movie;
+    const querieItem1 = req.query.Rating;
     const queryResult = await collection
       .find({
         movie: querieItem,
+        Rating: querieItem1,
       })
       .toArray();
     res.status(200).json(queryResult);
