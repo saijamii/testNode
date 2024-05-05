@@ -128,8 +128,8 @@ app.post("/sigup", async (req, res) => {
       // Store the user (replace with database insert)
       const result = await usersCollection.insertOne({
         userId,
-        firstName: firstName,
-        lastName: lastName,
+        firstName,
+        lastName,
         password: hashedPassword,
       });
       console.log(`Saved response with ID: ${result.insertedId}`);
