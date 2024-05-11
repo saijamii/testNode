@@ -120,7 +120,7 @@ app.post("/sigup", async (req, res) => {
 
     if (isUserExist) {
       res
-        .status(400)
+        .status(409)
         .json({ message: "Username already exists. Choose another one." });
     } else {
       // Hash the password before storing (using bcrypt)
