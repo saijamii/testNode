@@ -23,7 +23,7 @@ const dataBase = client.db(process.env.DATABASE_DEV);
 const collection = dataBase.collection("products");
 
 const app = express();
-const appVersion = "v11.05.24.02";
+const appVersion = "v11.05.24.04";
 app.use(express.json());
 app.use(cors()); // Use cors middleware
 
