@@ -218,6 +218,22 @@ const getInventory = async () => {
     console.log(`ERROR : ${error}`);
   }
 };
+app.delete("/deleteUser/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const success = await deleteUserById(id);
+  if (success) {
+    res.json({
+      message: "User Deleted Successfully",
+    });
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+});
+
+const deleteUserById = async (id) => {
+  const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
+  return result.deletedCount > 0;
+};
 
 app.get("/getProductDetail/:id", verifyToken, async (req, res) => {
   const user = await getUserById(req.params.id);
