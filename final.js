@@ -23,7 +23,7 @@ const dataBase = client.db(process.env.DATABASE_DEV);
 const collection = dataBase.collection("products");
 
 const app = express();
-const appVersion = "v03.03.24.02";
+const appVersion = "v11.05.24.04";
 app.use(express.json());
 app.use(cors()); // Use cors middleware
 
@@ -120,7 +120,7 @@ app.post("/sigup", async (req, res) => {
 
     if (isUserExist) {
       res
-        .status(400)
+        .status(409)
         .json({ message: "Username already exists. Choose another one." });
     } else {
       // Hash the password before storing (using bcrypt)
@@ -128,8 +128,8 @@ app.post("/sigup", async (req, res) => {
       // Store the user (replace with database insert)
       const result = await usersCollection.insertOne({
         userId,
-        firstName: firstName,
-        lastName: lastName,
+        firstName,
+        lastName,
         password: hashedPassword,
       });
       console.log(`Saved response with ID: ${result.insertedId}`);
@@ -217,6 +217,22 @@ const getInventory = async () => {
   } catch (error) {
     console.log(`ERROR : ${error}`);
   }
+};
+app.delete("/deleteUser/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const success = await deleteUserById(id);
+  if (success) {
+    res.json({
+      message: "User Deleted Successfully",
+    });
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+});
+
+const deleteUserById = async (id) => {
+  const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
+  return result.deletedCount > 0;
 };
 
 app.get("/getProductDetail/:id", verifyToken, async (req, res) => {
