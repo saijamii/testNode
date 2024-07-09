@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "nodemon final.js",
-    "startRest": " node ./RestApi/index.js",
+    "startRest": " nodemon ./RestApi/index.js",
     "dev": "nodemon final.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
