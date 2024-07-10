@@ -32,7 +32,7 @@ const Todos = [
 //Read
 
 app.get("/todos", (req, res) => {
-  res.json(Todos);
+  res.status(200).json(Todos);
 });
 
 //Create
@@ -40,7 +40,7 @@ app.get("/todos", (req, res) => {
 app.post("/todos", (req, res) => {
   const newTodo = req.body;
   Todos.push(newTodo);
-  res.json({
+  res.status(201).json({
     message: "New Todo Added",
   });
 });
@@ -58,7 +58,7 @@ app.put("/todos/:id", (req, res) => {
     };
   }
 
-  res.json({
+  res.status(204).json({
     message: "Todo updated successfully",
   });
 });
@@ -72,7 +72,7 @@ app.delete("/todos/:id", (req, res) => {
     Todos.splice(todoIndex, 1);
   }
 
-  res.json({
+  res.status(204).json({
     message: "Todo deleted successfully",
   });
 });
