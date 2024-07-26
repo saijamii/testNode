@@ -14,20 +14,24 @@ const data = {
 };
 
 export const resolvers = {
-  Book: {
-    author: (parent, args, context, info) => {
-      console.log(parent);
-      return data.authors.find(
-        (authorDetail) => authorDetail.id === parent.authorld
-      );
-    },
-  },
   Query: {
     authors: (parent, args, context, info) => {
       return data.authors;
     },
     books: (parent, args, context, info) => {
       return data.books;
+    },
+  },
+  Book: {
+    author: (parent, args, context, info) => {
+      return data.authors.find(
+        (authorDetail) => authorDetail.id === parent.authorld
+      );
+    },
+  },
+  Author: {
+    books: (parent, args, context, info) => {
+      return data.books.find((book) => parent.bookIds.includes(book.id));
     },
   },
 };
