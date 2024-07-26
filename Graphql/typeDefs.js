@@ -17,4 +17,11 @@ type Query {
     authors : [Author]
     books : [Book]
 }
+type Mutation {
+    addBook (
+        title : String! ,
+        publishedYear : Int! , 
+        authorld : ID!  ,
+         ) : Book! 
+}
 `;
