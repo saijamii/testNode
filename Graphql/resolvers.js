@@ -15,31 +15,22 @@ const data = {
 
 export const resolvers = {
   Query: {
-    authors: (parent, args, context, info) => {
-      return data.authors;
-    },
-    books: (parent, args, context, info) => {
-      return data.books;
-    },
+    authors: () => data.authors,
+    books: () => data.books,
   },
   Mutation: {
     addBook: (parent, args, context, info) => {
-      console.log(args);
       const newBook = { ...args, id: data.books.length + 1 };
       data.books.push(newBook);
       return newBook;
     },
   },
   Book: {
-    author: (parent, args, context, info) => {
-      return data.authors.find(
-        (authorDetail) => authorDetail.id === parent.authorId
-      );
-    },
+    author: (parent, args, context, info) =>
+      data.authors.find((authorDetail) => authorDetail.id === parent.authorId),
   },
   Author: {
-    books: (parent, args, context, info) => {
-      return data.books.filter((book) => parent.bookIds.includes(book.id));
-    },
+    books: (parent, args, context, info) =>
+      data.books.filter((book) => parent.bookIds.includes(book.id)),
   },
 };
