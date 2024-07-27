@@ -16,7 +16,9 @@ const data = {
 export const resolvers = {
   Query: {
     authors: () => data.authors,
+    author: (parent, args) => data.authors.find((a) => a.id === args.id),
     books: () => data.books,
+    book: (parent, args) => data.books.find(b => b.id === args.id),
   },
   Mutation: {
     addBook: (parent, args, context, info) => {
