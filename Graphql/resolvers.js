@@ -26,13 +26,34 @@ export const resolvers = {
       data.books.push(newBook);
       return newBook;
     },
+    
+    deleteBook: (parent, args) => {
+      const bookIndex = data.books.findIndex((b) => b.id === args.id);
+      if (bookIndex === -1) return null;
+      const [deletedBook] = data.books.splice(bookIndex, 1);
+      const author = data.authors.find((a) => a.id === deletedBook.authorId);
+      if (author) {
+        author.bookIds = author.bookIds.filter((bookId) => bookId !== args.id);
+      }
+      return deletedBook;
+    },
+    deleteAuthor: (parent, args) => {
+      const authorIndex = data.authors.findIndex((a) => a.id === args.id);
+      if (authorIndex === -1) return null;
+      const [deletedAuthor] = data.authors.splice(authorIndex, 1);
+      data.books = data.books.filter((b) => b.authorId !== args.id);
+      return deletedAuthor;
+    },
   },
+
   Book: {
     author: (parent, args, context, info) =>
       data.authors.find((authorDetail) => authorDetail.id === parent.authorId),
   },
+
   Author: {
     books: (parent, args, context, info) =>
       data.books.filter((book) => parent.bookIds.includes(book.id)),
   },
+  
 };

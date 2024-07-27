@@ -25,5 +25,7 @@ type Mutation {
     publishedYear: Int!
     authorId: ID!
   ): Book!
+  deleteBook(id: ID!): Book
+  deleteAuthor(id: ID!): Author
 }
 `;
