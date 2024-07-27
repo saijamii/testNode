@@ -5,11 +5,11 @@ const data = {
     { id: "3", name: "Author 3", bookIds: ["104", "105"] },
   ],
   books: [
-    { id: "101", title: "Book 1", publishedYear: 2000, authorld: "1" },
-    { id: "102", title: "Book 2", publishedYear: 2000, authorld: "1" },
-    { id: "103", title: "Book 3", publishedYear: 2000, authorld: "2" },
-    { id: "105", title: "Book 3", publishedYear: 2000, authorld: "3" },
-    { id: "104", title: "Book 3", publishedYear: 2000, authorld: "3" },
+    { id: "101", title: "Book 1", publishedYear: 2000, authorId: "1" },
+    { id: "102", title: "Book 2", publishedYear: 2000, authorId: "1" },
+    { id: "103", title: "Book 3", publishedYear: 2000, authorId: "2" },
+    { id: "104", title: "Book 4", publishedYear: 2000, authorId: "2" },
+    { id: "105", title: "Book 5", publishedYear: 2000, authorId: "3" },
   ],
 };
 
@@ -33,13 +33,13 @@ export const resolvers = {
   Book: {
     author: (parent, args, context, info) => {
       return data.authors.find(
-        (authorDetail) => authorDetail.id === parent.authorld
+        (authorDetail) => authorDetail.id === parent.authorId
       );
     },
   },
   Author: {
     books: (parent, args, context, info) => {
-      return data.books.find((book) => parent.bookIds.includes(book.id));
+      return data.books.filter((book) => parent.bookIds.includes(book.id));
     },
   },
 };
