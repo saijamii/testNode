@@ -26,6 +26,11 @@ type Mutation {
     authorId: ID!
   ): Book!
   deleteBook(id: ID!): Book
+  addAuthor(
+    id: ID!
+    name: String!
+    bookIds: [ID!]!
+  ): Author!
   deleteAuthor(id: ID!): Author
 }
 `;

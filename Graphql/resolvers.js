@@ -18,15 +18,22 @@ export const resolvers = {
     authors: () => data.authors,
     author: (parent, args) => data.authors.find((a) => a.id === args.id),
     books: () => data.books,
-    book: (parent, args) => data.books.find(b => b.id === args.id),
+    book: (parent, args) => data.books.find((b) => b.id === args.id),
   },
   Mutation: {
     addBook: (parent, args, context, info) => {
-      const newBook = { ...args, id: data.books.length + 1 };
+      if (data.books.find((b) => b.id === args.id)) {
+        throw new Error("Book with this ID already exists.");
+      }
+      const newBook = { ...args, id: (data.books.length + 1).toString() };
       data.books.push(newBook);
+      const author = data.authors.find((a) => a.id === args.authorId);
+      if (author) {
+        author.bookIds.push(newBook.id);
+      }
       return newBook;
     },
-    
+
     deleteBook: (parent, args) => {
       const bookIndex = data.books.findIndex((b) => b.id === args.id);
       if (bookIndex === -1) return null;
@@ -44,6 +51,20 @@ export const resolvers = {
       data.books = data.books.filter((b) => b.authorId !== args.id);
       return deletedAuthor;
     },
+    addAuthor: (parent, args) => {
+      if (data.authors.find((a) => a.id === args.id)) {
+        throw new Error("Author with this ID already exists.");
+      }
+      const newAuthor = { id: args.id, name: args.name, bookIds: args.bookIds };
+      data.authors.push(newAuthor);
+      args.bookIds.forEach((bookId) => {
+        const book = data.books.find((b) => b.id === bookId);
+        if (book) {
+          book.authorId = args.id;
+        }
+      });
+      return newAuthor;
+    },
   },
 
   Book: {
@@ -55,5 +76,4 @@ export const resolvers = {
     books: (parent, args, context, info) =>
       data.books.filter((book) => parent.bookIds.includes(book.id)),
   },
-  
 };
