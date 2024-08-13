@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "final.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "nodemon final.js",
     "startRest": " nodemon ./RestApi/index.js",
